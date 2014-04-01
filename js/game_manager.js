@@ -12,8 +12,20 @@ function GameManager(size, InputManager, Actuator, StorageManager, timestamp) {
   
   // Add timestamp to each GameManager instantiation
   this.timestamp = timestamp;
+  
+  // get query arguments
+  var _GET = {},
+    args = location.search.substr(1).split(/&/);
+  for (var i=0; i<args.length; ++i) {
+    var tmp = args[i].split(/=/);
+    if (tmp[0] != "") {
+      _GET[decodeURIComponent(tmp[0])] = decodeURIComponent(tmp.slice(1).join("").replace("+", " "));
+    }
+  }
+  
+  this.speed = _GET["s"] || 5;
 
-  this.setup();
+  this.setup(this.speed);
 }
 
 // Restart the game
@@ -22,7 +34,7 @@ GameManager.prototype.restart = function () {
   clearInterval(this.save_timer);
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
-  this.setup();
+  this.setup(this.speed);
 };
 
 // Keep playing after winning (allows going over 2048)
@@ -41,7 +53,7 @@ GameManager.prototype.isGameTerminated = function () {
 };
 
 // Set up the game
-GameManager.prototype.setup = function () {
+GameManager.prototype.setup = function (speed) {
   self = this;
   var previousState = this.storageManager.getGameState();
 
@@ -71,7 +83,7 @@ GameManager.prototype.setup = function () {
   // Start the timer
   var currgrid = this.grid;
   game_manager = self;
-  this.timer = setInterval(function() {currgrid.decrementTimers(200); game_manager.actuator.updateTiles(currgrid, {
+  this.timer = setInterval(function() {currgrid.decrementTimers(speed*100); game_manager.actuator.updateTiles(currgrid, {
     score:      game_manager.score,
     over:       game_manager.over,
     won:        game_manager.won,
@@ -211,7 +223,7 @@ GameManager.prototype.move = function (direction) {
     this.addRandomTile();
 
     if (!this.movesAvailable()) {
-      this.over = true; // Game over!
+      // Game over removed -- there is no loss condition now.
     }
 
     this.actuate();

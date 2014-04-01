@@ -127,19 +127,31 @@ HTMLActuator.prototype.positionClass = function (position) {
 
 HTMLActuator.prototype.updateScore = function (score) {
   this.clearContainer(this.scoreContainer);
-
   var difference = score - this.score;
-  var diffSecs = (difference/1000) << 0;
-  this.score = score;
+  
   var min = Math.floor(this.score/1000/60);
   var sec = ("0"+((this.score/1000) % 60 << 0)).slice(-2);
+  var totalSec = (this.score/1000) << 0;
+  var newTotalSec = (score/1000) << 0;
+  
+  
+  var diffSecs = newTotalSec - totalSec;
+  
+  this.score = score;
+   
 
   this.scoreContainer.textContent = min + ":" + sec;
 
-  if (diffSecs >= 10) {
+  if (diffSecs >= 2) {
     var addition = document.createElement("div");
     addition.classList.add("score-addition");
     addition.textContent = "+" + diffSecs + "s";
+
+    this.scoreContainer.appendChild(addition);
+  } else if (diffSecs ==1 && sec.slice(-1) == 0) {
+    var addition = document.createElement("div");
+    addition.classList.add("score-addition");
+    addition.textContent = "+" + diffSecs + "0s";
 
     this.scoreContainer.appendChild(addition);
   }
