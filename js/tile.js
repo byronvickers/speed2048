@@ -1,9 +1,9 @@
-function Tile(position, value) {
+function Tile(position, value, time) {
   this.x                = position.x;
   this.y                = position.y;
   this.value            = value || 2;
   
-  this.time             = value * 1000; // Timer in ms
+  this.time             = time || value*1000; // Timer in ms
   this.maxtime          = value * 1000; // Max value of timer (for time bar)
 
   this.previousPosition = null;

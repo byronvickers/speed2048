@@ -691,8 +691,7 @@ hr {
   .tile.tile-position-4-1 {
     -webkit-transform: translate(202px, 0px);
     -moz-transform: translate(202px, 0px);
-    left: 202px;
-    top: 0px; }
+    transform: translate(202px, 0px); }
   .tile.tile-position-4-2 {
     -webkit-transform: translate(202px, 67px);
     -moz-transform: translate(202px, 67px);
@@ -718,27 +717,29 @@ hr {
     margin-top: 30px !important; } }
 
 .tile-bar {
-  transition: width 500ms linear
+  transition: width 500ms linear;
+  z-index: 100;
+  transform: translateZ(0);
 }
 
 @keyframes wiggle{
   0% {
-    transform:rotate(0deg);
+    transform: rotate(0deg);
   }
   
   25% {
-    transform:rotate(10deg);
+    transform: rotate(5deg);
   }
   
   50% {
-    transform:rotate(0deg);
+    transform: rotate(0deg);
   }
   
   75% {
-    transform:rotate(-10deg);
+    transform: rotate(-5deg);
   }
   
   100% {
-    transform:rotate(0deg);
+    transform: rotate(0deg);
   }
 }

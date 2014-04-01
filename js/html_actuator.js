@@ -86,11 +86,11 @@ HTMLActuator.prototype.addTile = function (tile) {
   } else {
     classes.push("tile-new");
     this.applyClasses(wrapper, classes);
+    bar.classList.add("tile-new");
   }
   
   timePercent = Math.floor(tile.time*100/tile.maxtime);
   bar.setAttribute("style","width: "+timePercent+"%; background-color: #FFF; height:10%; border-radius: 10px 10px 10px 10px; position:absolute; top:-15%; left:+2.5%;");
-  //bar.style.animation = "shrink " + tile.time + "ms 1 steps(50) forwards";
   bar.classList.add("tile-bar");
   if (tile.value == 2){
     bar.style.visibility = "hidden";
@@ -101,6 +101,7 @@ HTMLActuator.prototype.addTile = function (tile) {
   barwrap.style.height = "100%";
   barwrap.style.width = "95%";
   barwrap.style.position = "absolute";
+  bar.style.transform = "translateZ(0)";
 
   // Add the inner part of the tile to the wrapper
   wrapper.appendChild(inner);
@@ -128,21 +129,26 @@ HTMLActuator.prototype.updateScore = function (score) {
   this.clearContainer(this.scoreContainer);
 
   var difference = score - this.score;
+  var diffSecs = (difference/1000) << 0;
   this.score = score;
+  var min = Math.floor(this.score/1000/60);
+  var sec = ("0"+((this.score/1000) % 60 << 0)).slice(-2);
 
-  this.scoreContainer.textContent = this.score;
+  this.scoreContainer.textContent = min + ":" + sec;
 
-  if (difference > 0) {
+  if (diffSecs >= 10) {
     var addition = document.createElement("div");
     addition.classList.add("score-addition");
-    addition.textContent = "+" + difference;
+    addition.textContent = "+" + diffSecs + "s";
 
     this.scoreContainer.appendChild(addition);
   }
 };
 
 HTMLActuator.prototype.updateBestScore = function (bestScore) {
-  this.bestContainer.textContent = bestScore;
+  var min = (bestScore/1000/60) << 0;
+  var sec = ("0"+((bestScore/1000) % 60 << 0)).slice(-2);
+  this.bestContainer.textContent = min + ":" + sec;
 };
 
 HTMLActuator.prototype.message = function (won) {
@@ -159,7 +165,7 @@ HTMLActuator.prototype.clearMessage = function () {
   this.messageContainer.classList.remove("game-over");
 };
 
-HTMLActuator.prototype.updateTiles = function (grid) {
+HTMLActuator.prototype.updateTiles = function (grid, metadata) {
   self = this;
   
   window.requestAnimationFrame(function () {
@@ -167,6 +173,9 @@ HTMLActuator.prototype.updateTiles = function (grid) {
       self.updateTile(tile);
     })
   })
+  
+  self.updateScore(metadata.score);
+  self.updateBestScore(metadata.bestScore);
 }
 
 HTMLActuator.prototype.updateTile = function (tile) {
@@ -179,13 +188,18 @@ HTMLActuator.prototype.updateTile = function (tile) {
     
   
   for (i = 0; i < tileElements.length; i++) {
-    wrapper = tileElements[i];
-    tileBarWrap = wrapper.getElementsByClassName("tile-barwrap")[0];
-    tileBar = tileBarWrap.getElementsByClassName("tile-bar")[0];
+    var wrapper = tileElements[i];
+    var tileBarWrap = wrapper.getElementsByClassName("tile-barwrap")[0];
+    var tileBar = tileBarWrap.getElementsByClassName("tile-bar")[0];
+    var inner = wrapper.getElementsByClassName("tile-inner")[0];
     
-    if (wrapper.getElementsByClassName("tile-inner")[0].textContent != tile.value) {
-      wrapper.getElementsByClassName("tile-inner")[0].textContent = tile.value;
-      //wrapper.style.animation = "wiggle 250ms 1 forwards";
+    var currentContent = inner.textContent;
+    
+    if (currentContent != tile.value) {
+      inner.textContent = tile.value;
+      if (currentContent >= tile.value){
+        inner.style.animation = "wiggle 250ms 1 forwards";
+      }
       this.applyClasses(wrapper, classes);
     }
     
@@ -197,5 +211,6 @@ HTMLActuator.prototype.updateTile = function (tile) {
     if (tile.value == 2 && tileBar.style.visibility != "hidden") {
       tileBar.style.visibility = "hidden";
     }
+    
   }
 }

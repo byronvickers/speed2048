@@ -18,6 +18,8 @@ function GameManager(size, InputManager, Actuator, StorageManager, timestamp) {
 
 // Restart the game
 GameManager.prototype.restart = function () {
+  clearInterval(this.timer);
+  clearInterval(this.save_timer);
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
   this.setup();
@@ -66,11 +68,21 @@ GameManager.prototype.setup = function () {
   // Update the actuator
   this.actuate();
   
-  // Start the timers
-  currgrid = this.grid;
+  // Start the timer
+  var currgrid = this.grid;
   game_manager = self;
-  timer = setInterval(function() {currgrid.decrementTimers(500)},500);
-  timer2 = setInterval(function() {game_manager.actuator.updateTiles(currgrid);},500);
+  this.timer = setInterval(function() {currgrid.decrementTimers(500); game_manager.actuator.updateTiles(currgrid, {
+    score:      game_manager.score,
+    over:       game_manager.over,
+    won:        game_manager.won,
+    bestScore:  game_manager.storageManager.getBestScore(),
+    terminated: game_manager.isGameTerminated()
+  }); game_manager.score += 500;},500);
+  this.save_timer = setInterval(function() {if (game_manager.over) {
+    game_manager.storageManager.clearGameState();
+  } else {
+    game_manager.storageManager.setGameState(game_manager.serialize());
+  }},10000);
 };
 
 // Set up the initial tiles to start the game with
@@ -92,7 +104,7 @@ GameManager.prototype.addRandomTile = function () {
 
 // Sends the updated grid to the actuator
 GameManager.prototype.actuate = function () {
-  if (this.storageManager.getBestScore() < this.score) {
+  if ((this.won && this.score < this.storageManager.getBestScore()) || (this.storageManager.getBestScore() == 0)) {
     this.storageManager.setBestScore(this.score);
   }
 
@@ -180,10 +192,10 @@ GameManager.prototype.move = function (direction) {
           tile.updatePosition(positions.next);
 
           // Update the score
-          self.score += merged.value;
+          
 
           // The mighty 2048 tile
-          if (merged.value === 2048) self.won = true;
+          if (merged.value === 16) self.won = true;
         } else {
           self.moveTile(tile, positions.farthest);
         }
