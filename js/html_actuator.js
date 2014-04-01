@@ -75,6 +75,9 @@ HTMLActuator.prototype.addTile = function (tile) {
   } else if (tile.mergedFrom) {
     classes.push("tile-merged");
     this.applyClasses(wrapper, classes);
+    
+    barwrap.classList.add("tile-merged");
+    bar.classList.add("tile-merged");
 
     // Render the tiles that merged
     tile.mergedFrom.forEach(function (merged) {
@@ -85,16 +88,19 @@ HTMLActuator.prototype.addTile = function (tile) {
     this.applyClasses(wrapper, classes);
   }
   
-  var timePercent = Math.floor(tile.time*95/tile.maxtime);
-  bar.setAttribute("style","width: "+timePercent+"%; background-color: #FFF; height:100%; border-radius: 10px 10px 10px 10px; position:relative; top:-150%; left:+2.5%;");
+  timePercent = Math.floor(tile.time*100/tile.maxtime);
+  bar.setAttribute("style","width: "+timePercent+"%; background-color: #FFF; height:10%; border-radius: 10px 10px 10px 10px; position:absolute; top:-15%; left:+2.5%;");
+  //bar.style.animation = "shrink " + tile.time + "ms 1 steps(50) forwards";
+  bar.classList.add("tile-bar");
   if (tile.value == 2){
     bar.style.visibility = "hidden";
   }
-  bar.classList.add("tile-bar");
   
   barwrap.classList.add("tile-barwrap");
   barwrap.classList.add("text-center");
-  barwrap.style.height = "10%";
+  barwrap.style.height = "100%";
+  barwrap.style.width = "95%";
+  barwrap.style.position = "absolute";
 
   // Add the inner part of the tile to the wrapper
   wrapper.appendChild(inner);
@@ -168,18 +174,28 @@ HTMLActuator.prototype.updateTile = function (tile) {
   positionClass = this.positionClass({x: tile.x, y:tile.y })
   tileElements = document.getElementsByClassName(positionClass);
   
-  timePercent = Math.floor(tile.time*95/tile.maxtime);
+  timePercent = Math.floor(100*tile.time/tile.maxtime);
   var classes = ["tile", "tile-" + tile.value, positionClass];
     
   
   for (i = 0; i < tileElements.length; i++) {
     wrapper = tileElements[i];
+    tileBarWrap = wrapper.getElementsByClassName("tile-barwrap")[0];
+    tileBar = tileBarWrap.getElementsByClassName("tile-bar")[0];
     
-    wrapper.getElementsByClassName("tile-inner")[0].textContent = tile.value;
-    this.applyClasses(wrapper, classes);
+    if (wrapper.getElementsByClassName("tile-inner")[0].textContent != tile.value) {
+      wrapper.getElementsByClassName("tile-inner")[0].textContent = tile.value;
+      //wrapper.style.animation = "wiggle 250ms 1 forwards";
+      this.applyClasses(wrapper, classes);
+    }
     
-    tileBar = wrapper.getElementsByClassName("tile-barwrap")[0].getElementsByClassName("tile-bar")[0];
     tileBar.style.width = timePercent+"%";
-    tileBar.style.visibility = "visible";
+    
+    if (tile.value > 2 && tileBar.style.visibility != "visible") {
+      tileBar.style.visibility = "visible";
+    }
+    if (tile.value == 2 && tileBar.style.visibility != "hidden") {
+      tileBar.style.visibility = "hidden";
+    }
   }
 }
