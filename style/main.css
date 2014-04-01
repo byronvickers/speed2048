@@ -718,27 +718,67 @@ hr {
 
 .tile-bar {
   transition: width 500ms linear;
+  -webkit-transition: width 500ms linear;
+  -moz-transition: width 500ms linear;
   z-index: 100;
   transform: translateZ(0);
+}
+
+.decremented {
+  -webkit-animation: wiggle 250ms 1;
+  -moz-animation: wiggle 250ms 1;
+  animation: wiggle 250ms 1;
 }
 
 @keyframes wiggle{
   0% {
     transform: rotate(0deg);
   }
-  
   25% {
     transform: rotate(5deg);
   }
-  
   50% {
     transform: rotate(0deg);
   }
-  
   75% {
     transform: rotate(-5deg);
   }
-  
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@-webkit-keyframes wiggle{
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@-moz-keyframes wiggle{
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(5deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
   100% {
     transform: rotate(0deg);
   }

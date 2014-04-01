@@ -210,9 +210,11 @@ HTMLActuator.prototype.updateTile = function (tile) {
     if (currentContent != tile.value) {
       inner.textContent = tile.value;
       if (currentContent >= tile.value){
-        inner.style.animation = "wiggle 250ms 1 forwards";
-      }
+        inner.className = inner.className + " decremented";
+      } 
       this.applyClasses(wrapper, classes);
+    } else if (inner.className != "tile-inner") {
+      inner.className = "tile-inner";
     }
     
     tileBar.style.width = timePercent+"%";
