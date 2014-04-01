@@ -71,7 +71,7 @@ GameManager.prototype.setup = function () {
   // Start the timer
   var currgrid = this.grid;
   game_manager = self;
-  this.timer = setInterval(function() {currgrid.decrementTimers(500); game_manager.actuator.updateTiles(currgrid, {
+  this.timer = setInterval(function() {currgrid.decrementTimers(200); game_manager.actuator.updateTiles(currgrid, {
     score:      game_manager.score,
     over:       game_manager.over,
     won:        game_manager.won,
@@ -195,7 +195,7 @@ GameManager.prototype.move = function (direction) {
           
 
           // The mighty 2048 tile
-          if (merged.value === 16) self.won = true;
+          if (merged.value === 2048) self.won = true;
         } else {
           self.moveTile(tile, positions.farthest);
         }
