@@ -419,7 +419,7 @@ hr {
     -webkit-transform: scale(1);
     -moz-transform: scale(1);
     transform: scale(1); } }
-.tile-new .tile-inner {
+.tile-new .tile-inner, .tile-new .tile-bar {
   -webkit-animation: appear 200ms ease 100ms;
   -moz-animation: appear 200ms ease 100ms;
   animation: appear 200ms ease 100ms;
